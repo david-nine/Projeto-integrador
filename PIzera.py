@@ -42,20 +42,12 @@ class Jogador(object):
                     self.dinheiro = 0
             self.correr()
 
-    # def correr(self):
-    #     jogo.baralho ?
-    #     for i in range(2):
-    #         Jogo.baralho.append(self.cartas[i])
-    #         Jogo.rodada.remove(Jogador)
-    #     self.cartas = []
-
-
-class Bot(Jogador):
-    def __init__(self):
-        Jogador.__init__(nome, cartas=[], dinheiro=1000)
-
-    def bot_jogar(self):
-        pass
+    def correr(self):
+        jogo.baralho()
+        for i in range(2):
+            Jogo.baralho.append(self.cartas[i])
+            Jogo.rodada.remove(Jogador)
+        self.cartas = []
 
 class Jogo(object):
     def __init__(self, baralho):
@@ -66,7 +58,7 @@ class Jogo(object):
         self.rodada = [self.jogadores[0]]
     
     def dar_cartas(self):
-        for i in range(9):
+        for i in range(len(self.jogadores)):
             cartas = [] 
             for cont in range(2):
                 c = random.choice(self.baralho)
@@ -80,11 +72,8 @@ class Jogo(object):
 
     def add_jogadores(self):
         nome = input("Seu nome: ")
-        player1 = Jogador(nome)
-        jogadores = [player1]
-        for i in range(8):
-            nome = "bot" + str(i)
-            jogadores.append(Jogador(nome))
+        player = Jogador(nome)
+        jogadores = [player]
         return jogadores
 
 
@@ -102,6 +91,8 @@ class Jogo(object):
         while i < 5 and self.rodada != []:
             self.jogadores[0].jogar()
             i += 1
+            print(self.jogadores[0].cartas)
+            print(self.mesa)
 
 if __name__ == "__main__":
     start = Jogo(baralho) 

@@ -71,13 +71,24 @@ class Jogo(object):
             self.mesa.append(c)
 
     def add_jogadores(self):
-        nome = input("Seu nome: ")
-        player = Jogador(nome)
-        jogadores = [player]
+        jogadores = []
+        while True:
+            try:
+                num = int(input("Quantidade de jogadores?: "))
+                if not 2 <= num <= 8:
+                    raise ValueError("Quantidade fora do permitido")
+                break
+            except ValueError as error:
+                pass
+                print(error)    
+        for i in range(num):
+            nome = input("Nome do jogador: ")
+            player = Jogador(nome)
+            jogadores.append(player)
         return jogadores
 
 
-    def calcular_veencedor(self):
+    def calcular_vencedor(self):
         for i in range(9):
             player = self.jogadores[i]
             player.valor = 0

@@ -55,33 +55,18 @@ def calcular_mao(mao, mesa):
                     pontos.append([cont, i])
                     igual(pontos, valor_mao)
                     return pontos
-                    
                 if y == 2:
                     pontos = [3]
                     pontos.append([cont, i])
                     igual(pontos, valor_mao)    
 
         if x == 3:
-            for cont in range(valor_mao[x], 15):
+            for cont in range(i+1, 15):
                 y = valor_mao.count(cont)
                 if y == 2 or y == 3:
                     pontos = [7]
-                    mao = [valor_mao[-1], valor_mao[-2]]
-                    mao = sorted(mao)
-                    y = [mao[1], mao[0]]
-                    if valor_mao[5] == i and valor_mao[6] == i or valor_mao[5] == x and valor_mao[6] == x or valor_mao[5] == x and valor[6] == i or valor_mao[5] == x and valor[6] == i:
-                        pontos.append(y)
-                        pontos.append([0, 0])
-                    elif valor_mao[5] != x and valor_mao[6] != i:
-                        pontos.append([0, 0])
-                        pontos.append(y)                        
-                    elif valor_mao[5] != i and valor_mao[6] == x:
-                        pontos.append([valor_mao[6], 0])
-                        pontos.append([valor_mao[5], 0])
-                    elif valor_mao[5] == i and valor_mao[6] != x:
-                        pontos.append([valor_mao[5], 0])
-                        pontos.append([valor_mao[6], 0])
-                    return pontos
+                    pontos.append([cont, i])
+                    return igual(pontos, valor_mao)
 
 #flush
     def flush(mesa, valor_mao, valor):
@@ -93,6 +78,8 @@ def calcular_mao(mao, mesa):
             y = x.count(letras[i])
             if y >= 5:
                 pontos = [6]
+                if 1 in valor_mao:
+                    valor_mao.remove(1)
                 if mesa[-2][-1] == letras[i] and mesa[-1][-1] == letras[i]:
                     a = sorted([valor_mao[-2], valor_mao[-1]])    
                     a = [a[1], a[0]]
@@ -152,9 +139,10 @@ def calcular_mao(mao, mesa):
     if pp:
         if pontos[0] == 5 and pp[0] == 6:    
             pontos[0] = 9
+            pontos[1] = []
         else:
             pontos = pp 
     return pontos
 
-valor = calcular_mao(["1p", "Kp"], ["5o","10o","2e","8p","4e"])
+valor = calcular_mao(["4p", "3p"], ["1p","5p","2p","5e","6c"])
 print(valor)

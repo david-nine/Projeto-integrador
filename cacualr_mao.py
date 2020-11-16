@@ -8,7 +8,6 @@ def calcular_mao(mao, mesa):
     for i in range(7):
         valor_mao.append(valor_cartas[mesa[i]])
 
-
 #carta alta
     pontos = [1]
     x = [valor_mao[5], valor_mao[6]]
@@ -138,11 +137,13 @@ def calcular_mao(mao, mesa):
     pp = flush(mesa, valor_mao, 7)
     if pp:
         if pontos[0] == 5 and pp[0] == 6:    
-            pontos[0] = 9
-            pontos[1] = []
+            pontos = [9]
+            igual(pontos, valor_mao)
+            pontos.append([0, 0])
         else:
             pontos = pp 
     return pontos
 
-valor = calcular_mao(["4p", "3p"], ["1p","5p","2p","5e","6c"])
-print(valor)
+if __name__ == "__main__":
+    valor = calcular_mao(["4p", "3p"], ["1p","5p","2p","5e","6c"])
+    print(valor)

@@ -29,27 +29,52 @@ class Jogador(object):
         print("Sua mão: ", self.cartas)
         print("|===================================|")
         print("O que deseja fazer?")
-        print("1. Apostar")
-        print("2. Passar")
-        print("3. A win")
-        print("4. Correr")
-        jogada = int(input()) 
-        while True:
-            try:
-                if not 1 <= jogada <= 4:
-                    raise ValueError("Quantidade fora do permitido")
-                break
-                elif jogada == 1:
-                    quantidade = int(input("quantidade: "))    
-                    self.apostar(quantidade)
-                elif jogada == 2:
-                    return True
-                elif jogada == 3: 
-                    self.apostar(self.dinheiro)
-                elif jogada == 4:
-                    self.correr()
-            except ValueError as error:
-                print(error)
+        if start.aposta_rodada == 0:
+            print("1. Apostar")
+            print("2. Passar")
+            print("3. A win")
+            print("4. Correr")
+            while True:
+                jogada = int(input()) 
+                try:
+                    if jogada == 1:
+                        quantidade = int(input("quantidade: "))    
+                        self.apostar(quantidade)
+                        start.aposta_rodada = quantidade
+                    elif jogada == 2:
+                        return True
+                    elif jogada == 3: 
+                        self.apostar(self.dinheiro)
+                    elif jogada == 4:
+                        self.correr()
+                    else:
+                        raise ValueError("Quantidade fora do permitido")
+                    break
+                except ValueError as error:
+                    print(error)
+        else:
+            print("1. Aumentar")
+            print("2. Cobrir")
+            print("3. A win")
+            print("4. Correr")
+            while True:
+                jogada = int(input()) 
+                try:
+                    if jogada == 1:
+                        quantidade = int(input("Aumentar em quanto:"))    
+                        self.apostar(quantidade)
+                        start.aposta_rodada = quantidade
+                    elif jogada == 2:
+                        self.apostar(start.aposta_rodada)
+                    elif jogada == 3: 
+                        self.apostar(self.dinheiro)
+                    elif jogada == 4:
+                        self.correr()
+                    else:
+                        raise ValueError("Quantidade fora do permitido")
+                    break
+                except ValueError as error:
+                    print(error)
     
     def cobrir(self, aposta):
         cobre = input("deseja cobrir a aposta? (s / n): ")
@@ -79,6 +104,7 @@ class Jogo(object):
         self.mesa = []
         self.dinheiro_mesa = 0
         self.rodada = []
+        self.aposta_rodada = 0
     
     def dar_cartas(self):
         for i in range(len(self.jogadores)):
@@ -122,9 +148,14 @@ class Jogo(object):
         mostrar = [self.mesa[0], self.mesa[1], self.mesa[2]]
         while i < 4 and len(self.rodada) > 1:
             for jogador in self.rodada:
-                jogador.jogar(mostrar)
-            mostrar.append(self.mesa[i+3])
+                if i < 0:
+                    jogador.jogar(mostrar)
+                    mostrar.append(self.mesa[i+3])
+                else:
+                    jogador.jogar("Rodada de apostas inicial")
+            self.aposta_rodada = 0
             i += 1
+            
 
             
             # if len(self.rodada) == 1:

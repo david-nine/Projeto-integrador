@@ -14,84 +14,137 @@ class Jogador(object):
         self.cartas = cartas 
         self.dinheiro = dinheiro
         self.valor_mao = []
+        self.aposta = None
+        self.win = False
 
+    def getJogador(self, nome):
+        for jogador in start.jogadores:
+            if jogador.nome == nome:
+                return jogador 
+    
     def apostar(self, quantidade):
         if self.dinheiro >= quantidade:
             self.dinheiro -= quantidade
             start.dinheiro_mesa += quantidade
+            self.aposta = quantidade
+            start.aposta_rodada = quantidade
         else:
             return False
 
     def jogar(self, mostrar):
         print("|===================================|")
-        print("Vez de", self.nome)
+        print("Vez de", self.nome, "Dinheiro: ", self.dinheiro)
         print("Mesa:    ", mostrar)
         print("Sua mão: ", self.cartas)
+        print("Aposta da rodada",start.aposta_rodada)
         print("|===================================|")
         print("O que deseja fazer?")
-        if start.aposta_rodada == 0:
+        if mostrar == "Rodada de apostas inicial":
+            if self.nome != start.rodada[0].nome:
+                print("1. Apostar")
+                print("2. Cobrir")
+                print("3. Correr")
+                while True:
+                    jogada = input()
+                    try:
+                        if jogada == '1':
+                            quantidade = int(input("Valor: "))    
+                            self.apostar(quantidade)
+                            start.aposta_rodada = quantidade * 2
+                        elif jogada == '2':
+                            self.apostar(start.aposta_rodada)
+                        elif jogada == '3':    
+                            self.correr()
+                        else:
+                            raise ValueError("Jogada inválida")
+                        break
+                    except ValueError as error:
+                        print(error)
+            else:    
+                print("1. Apostar")
+                print("2. Correr")
+                print("3. A win")
+                while True:
+                    jogada = input()
+                    try:
+                        if jogada == '1':
+                            quantidade = int(input("Valor: "))    
+                            self.apostar(quantidade)
+                        elif jogada == '2':
+                            self.correr()
+                        elif jogada == '3':
+                            print(self.dinheiro)
+                            self.apostar(self.dinheiro)
+                            self.win = True
+                        else:
+                            raise ValueError("Jogada inválida")
+                        break
+                    except ValueError as error:
+                        print(error)
+        elif start.aposta_rodada == 0:
             print("1. Apostar")
             print("2. Passar")
             print("3. A win")
             print("4. Correr")
             while True:
-                jogada = int(input()) 
+                jogada = input() 
                 try:
-                    if jogada == 1:
+                    if jogada == '1':
                         quantidade = int(input("quantidade: "))    
                         self.apostar(quantidade)
-                        start.aposta_rodada = quantidade
-                    elif jogada == 2:
+                    elif jogada == '2':
                         return True
-                    elif jogada == 3: 
+                    elif jogada == '3': 
                         self.apostar(self.dinheiro)
-                    elif jogada == 4:
+                        self.win = True
+                    elif jogada == '4':
                         self.correr()
                     else:
-                        raise ValueError("Quantidade fora do permitido")
+                        raise ValueError("Jogada inválida")
                     break
                 except ValueError as error:
                     print(error)
         else:
-            print("1. Aumentar")
-            print("2. Cobrir")
-            print("3. A win")
-            print("4. Correr")
-            while True:
-                jogada = int(input()) 
-                try:
-                    if jogada == 1:
-                        quantidade = int(input("Aumentar em quanto:"))    
-                        self.apostar(quantidade)
-                        start.aposta_rodada = quantidade
-                    elif jogada == 2:
-                        self.apostar(start.aposta_rodada)
-                    elif jogada == 3: 
+            if self.dinheiro <= start.aposta_rodada:
+                print("1. A win")
+                print("2. Correr")
+                while True:
+                    jogada = input()
+                    if jogada == '1': 
                         self.apostar(self.dinheiro)
-                    elif jogada == 4:
+                        self.win = True
+                    elif jogada == '2':
                         self.correr()
-                    else:
-                        raise ValueError("Quantidade fora do permitido")
-                    break
-                except ValueError as error:
-                    print(error)
-    
-    def cobrir(self, aposta):
-        cobre = input("deseja cobrir a aposta? (s / n): ")
-        if cobre == "s":
-            if self.dinheiro >= aposta:
-                self.dinheiro -= aposta
-            else: 
-                win = input("deseja dar a win? (s / n): ")
-                if win == "s":
-                    self.dinheiro = 0
-            self.correr()
+            else:
+                print("1. Aumentar")
+                print("2. Cobrir")
+                print("3. A win")
+                print("4. Correr")
+                while True:
+                    jogada = input()
+                    try:
+                        if jogada == '1':
+                            quantidade = int(input("Aumentar em quanto:"))    
+                            self.apostar(quantidade)
+                        elif jogada == '2':
+                            self.apostar(start.aposta_rodada)
+                        elif jogada == '3': 
+                            self.apostar(self.dinheiro)
+                            self.win = True
+                        elif jogada == '4':
+                            self.correr()
+                        else:
+                            raise ValueError("Jogada inválida")
+                        break
+                    except ValueError as error:
+                        print(error)
 
     def correr(self):
         start.baralho
         for i in range(2):
             start.baralho.append(self.cartas[i])
-            start.rodada.remove(jogador)
+        jogador = self.getJogador(self.nome)
+        start.rodada.remove(jogador)
         self.cartas = []
 
     def receber(self, quantidade):
@@ -147,15 +200,23 @@ class Jogo(object):
         self.rodada = self.jogadores
         mostrar = [self.mesa[0], self.mesa[1], self.mesa[2]]
         while i < 4 and len(self.rodada) > 1:
+            if len(self.rodada) == 1:
+                break 
             for jogador in self.rodada:
-                if i < 0:
+                if i != 0:
                     jogador.jogar(mostrar)
-                    mostrar.append(self.mesa[i+3])
                 else:
                     jogador.jogar("Rodada de apostas inicial")
+            for jogador in self.rodada:
+                if not jogador.aposta:
+                    jogador.jogar(mostrar)
+            for jogador in self.rodada:
+                if jogador.win == True:
+                    break
+            if i != 0 and i < 3:
+                mostrar.append(self.mesa[i+2])
             self.aposta_rodada = 0
             i += 1
-            
 
             
             # if len(self.rodada) == 1:
@@ -168,13 +229,14 @@ if __name__ == "__main__":
     start.calcular_vencedor()
     start.rodadas()      
     a = start.jogadores[0]
-    b = start.jogadores[1]
     print(a.nome)
     print(a.cartas)
     print(a.valor_mao)
     print(a.dinheiro)
-    print(b.nome)
-    print(b.cartas)
-    print(b.valor_mao)
-    print(b.dinheiro)
+    if start.jogadores[1] != None:
+        b = start.jogadores[1]
+        print(b.nome)
+        print(b.cartas)
+        print(b.valor_mao)
+        print(b.dinheiro)
     print(start.mesa)

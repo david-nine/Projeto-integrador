@@ -22,14 +22,24 @@ class Jogador(object):
             if jogador.nome == nome:
                 return jogador 
     
-    def apostar(self, quantidade):
-        if self.dinheiro >= quantidade:
-            self.dinheiro -= quantidade
-            start.dinheiro_mesa += quantidade
-            self.aposta = quantidade
-            start.aposta_rodada = quantidade
-        else:
-            return False
+    def apostar(self, aposta = 0, win = False, cobrir = False):
+        while True:
+            if win == False and cobrir == False:
+                quantidade = int(input("valor: "))
+            else:
+                quantidade = aposta
+            try:
+                quantidade = quantidade + aposta
+                if self.dinheiro >= quantidade:
+                    self.dinheiro -= quantidade
+                    start.dinheiro_mesa += quantidade
+                    self.aposta = quantidade
+                    start.aposta_rodada = quantidade
+                else:
+                    raise ValueError("Não tem dinheiro brow")
+                break
+            except ValueError as error:
+                print(error)
 
     def jogar(self, mostrar):
         print("|===================================|")
@@ -44,15 +54,15 @@ class Jogador(object):
                 print("1. Apostar")
                 print("2. Cobrir")
                 print("3. Correr")
+                print
                 while True:
                     jogada = input()
                     try:
-                        if jogada == '1':
-                            quantidade = int(input("Valor: "))    
-                            self.apostar(quantidade)
+                        if jogada == '1':   
+                            self.apostar()
                             start.aposta_rodada = quantidade * 2
                         elif jogada == '2':
-                            self.apostar(start.aposta_rodada)
+                            self.apostar(aposta=start.aposta_rodada, cobrir=True)
                         elif jogada == '3':    
                             self.correr()
                         else:
@@ -68,13 +78,11 @@ class Jogador(object):
                     jogada = input()
                     try:
                         if jogada == '1':
-                            quantidade = int(input("Valor: "))    
-                            self.apostar(quantidade)
+                            self.apostar()
                         elif jogada == '2':
                             self.correr()
                         elif jogada == '3':
-                            print(self.dinheiro)
-                            self.apostar(self.dinheiro)
+                            self.apostar(aposta=self.dinheiro, win=True)
                             self.win = True
                         else:
                             raise ValueError("Jogada inválida")
@@ -90,12 +98,11 @@ class Jogador(object):
                 jogada = input() 
                 try:
                     if jogada == '1':
-                        quantidade = int(input("quantidade: "))    
-                        self.apostar(quantidade)
+                        self.apostar()
                     elif jogada == '2':
                         return True
                     elif jogada == '3': 
-                        self.apostar(self.dinheiro)
+                        self.apostar(aposta=self.dinheiro, win=True)
                         self.win = True
                     elif jogada == '4':
                         self.correr()
@@ -111,7 +118,7 @@ class Jogador(object):
                 while True:
                     jogada = input()
                     if jogada == '1': 
-                        self.apostar(self.dinheiro)
+                        self.apostar(aposta=self.dinheiro, win=True)
                         self.win = True
                     elif jogada == '2':
                         self.correr()
@@ -124,12 +131,11 @@ class Jogador(object):
                     jogada = input()
                     try:
                         if jogada == '1':
-                            quantidade = int(input("Aumentar em quanto:"))    
-                            self.apostar(quantidade)
+                            self.apostar(aposta=start.aposta_rodada)
                         elif jogada == '2':
-                            self.apostar(start.aposta_rodada)
+                            self.apostar(aposta=start.aposta_rodada, cobrir=True)
                         elif jogada == '3': 
-                            self.apostar(self.dinheiro)
+                            self.apostar(aposta=self.dinheiro, win=True)
                             self.win = True
                         elif jogada == '4':
                             self.correr()
@@ -200,22 +206,22 @@ class Jogo(object):
         self.rodada = self.jogadores
         mostrar = [self.mesa[0], self.mesa[1], self.mesa[2]]
         while i < 4 and len(self.rodada) > 1: 
-            cont = 0
-            while cont <= len(self.rodada):
-                jogador = self.rodada[cont]
+            for jogador in self.rodada:
+                print(self.rodada)
                 if i != 0:
                     jogador.jogar(mostrar)
                 else:
                     jogador.jogar("Rodada de apostas inicial")
-                if len(self.rodada) == 1:
-                    break  
-                cont += 1          
+            if len(self.rodada) == 1:
+                break            
             for jogador in self.rodada:
-                if not jogador.aposta:
+                if jogador.aposta == 0 and self.aposta_rodada != jogador.aposta:
                     jogador.jogar(mostrar)
             for jogador in self.rodada:
                 if jogador.win == True:
                     break
+            for jogador in self.rodada:
+                jogador.aposta = 0
             if i != 0 and i < 3:
                 mostrar.append(self.mesa[i+2])
             self.aposta_rodada = 0

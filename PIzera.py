@@ -199,14 +199,17 @@ class Jogo(object):
         i = 0
         self.rodada = self.jogadores
         mostrar = [self.mesa[0], self.mesa[1], self.mesa[2]]
-        while i < 4 and len(self.rodada) > 1:
-            if len(self.rodada) == 1:
-                break 
-            for jogador in self.rodada:
+        while i < 4 and len(self.rodada) > 1: 
+            cont = 0
+            while cont <= len(self.rodada):
+                jogador = self.rodada[cont]
                 if i != 0:
                     jogador.jogar(mostrar)
                 else:
                     jogador.jogar("Rodada de apostas inicial")
+                if len(self.rodada) == 1:
+                    break  
+                cont += 1          
             for jogador in self.rodada:
                 if not jogador.aposta:
                     jogador.jogar(mostrar)
@@ -228,15 +231,10 @@ if __name__ == "__main__":
     start.dar_cartas()   
     start.calcular_vencedor()
     start.rodadas()      
-    a = start.jogadores[0]
-    print(a.nome)
-    print(a.cartas)
-    print(a.valor_mao)
-    print(a.dinheiro)
-    if start.jogadores[1] != None:
-        b = start.jogadores[1]
-        print(b.nome)
-        print(b.cartas)
-        print(b.valor_mao)
-        print(b.dinheiro)
+    for j in start.jogadores:    
+        a = start.jogadores[0]
+        print(j.nome)
+        print(j.cartas)
+        print(j.valor_mao)
+        print(j.dinheiro)
     print(start.mesa)

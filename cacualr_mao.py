@@ -14,7 +14,6 @@ def calcular_mao(mao, mesa):
     if x[1] >= x[0]:
         x = [x[1], x[0]]
     pontos.append(x)
-    pontos.append([0, 0])
     
     def igual(pontos, valor_mao):
         mao = [valor_mao[-1], valor_mao[-2]]
@@ -28,19 +27,16 @@ def calcular_mao(mao, mesa):
         x = valor_mao.count(i)
         if x == 2:
             pontos = [2]
-            pontos.append([i, i])
             pontos = igual(pontos, valor_mao)
 
 #trinca
         if x == 3:
             pontos = [4]
-            pontos.append([i, i])
             pontos = igual(pontos, valor_mao)         
 
 #quadra
         if x == 4:
             pontos = [8]
-            pontos.append([i, i])
             pontos = igual(pontos, valor_mao)
             return pontos
 
@@ -51,12 +47,10 @@ def calcular_mao(mao, mesa):
                 y = valor_mao.count(cont)
                 if y == 3:
                     pontos = [7]
-                    pontos.append([cont, i])
                     igual(pontos, valor_mao)
                     return pontos
                 if y == 2:
                     pontos = [3]
-                    pontos.append([cont, i])
                     igual(pontos, valor_mao)    
 
         if x == 3:
@@ -64,7 +58,6 @@ def calcular_mao(mao, mesa):
                 y = valor_mao.count(cont)
                 if y == 2 or y == 3:
                     pontos = [7]
-                    pontos.append([cont, i])
                     return igual(pontos, valor_mao)
 
 #flush
@@ -79,23 +72,24 @@ def calcular_mao(mao, mesa):
                 pontos = [6]
                 if 1 in valor_mao:
                     valor_mao.remove(1)
-                if mesa[-2][-1] == letras[i] and mesa[-1][-1] == letras[i]:
-                    a = sorted([valor_mao[-2], valor_mao[-1]])    
-                    a = [a[1], a[0]]
-                    pontos.append(a)
-                    pontos.append(a)
-                elif mesa[-2][-1] != letras[i] and mesa[-1][-1] != letras[i]:
-                    a = sorted([valor_mao[-2], valor_mao[-1]])    
-                    a = [a[1], a[0]]
-                    pontos.append([0, 0])
-                    pontos.append(a)
-                elif mesa[-2][-1] == letras[i]:
-                    pontos.append([valor_mao[-2], 0])
-                    pontos.append([valor_mao[-1], 0])
-                elif mesa[-1][-1] == letras[i]:
-                    pontos.append([valor_mao[-1], 0])
-                    pontos.append([valor_mao[-2], 0])
-                return pontos
+                pontos = igual(pontos, valor_mao)
+                # if mesa[-2][-1] == letras[i] and mesa[-1][-1] == letras[i]:
+                #     a = sorted([valor_mao[-2], valor_mao[-1]])    
+                #     a = [a[1], a[0]]
+                #     pontos.append(a)
+                #     pontos.append(a)
+                # elif mesa[-2][-1] != letras[i] and mesa[-1][-1] != letras[i]:
+                #     a = sorted([valor_mao[-2], valor_mao[-1]])    
+                #     a = [a[1], a[0]]
+                #     pontos.append([0, 0])
+                #     pontos.append(a)
+                # elif mesa[-2][-1] == letras[i]:
+                #     pontos.append([valor_mao[-2], 0])
+                #     pontos.append([valor_mao[-1], 0])
+                # elif mesa[-1][-1] == letras[i]:
+                #     pontos.append([valor_mao[-1], 0])
+                #     pontos.append([valor_mao[-2], 0])
+                # return pontos
 
 #sequencia
     x = valor_mao.count(14)
@@ -120,26 +114,26 @@ def calcular_mao(mao, mesa):
                 if i == 1:
                     valor_mao.remove(14)
                     valor_mao.append(1)
-                if valor_mao[5] in lista and valor_mao[6] in lista:
-                    a = sorted([valor_mao[5],valor_mao[6]])
-                    pontos.append([a[1], a[0]])
-                    pontos.append([0, 0])
-                elif valor_mao[5] in lista:
-                    pontos.append([valor_mao[5], 0])
-                    pontos.append([valor_mao[6], 0])
-                elif valor_mao[6] in lista:
-                    pontos.append([valor_mao[6], 0])
-                    pontos.append([valor_mao[5], 0])
-                else:
-                    pontos.append([0, 0])
-                    igual(pontos, valor_mao)
+                igual(pontos, valor_mao)
+                # if valor_mao[5] in lista and valor_mao[6] in lista:
+                #     a = sorted([valor_mao[5],valor_mao[6]])
+                #     pontos.append([a[1], a[0]])
+                #     pontos.append([0, 0])
+                # elif valor_mao[5] in lista:
+                #     pontos.append([valor_mao[5], 0])
+                #     pontos.append([valor_mao[6], 0])
+                # elif valor_mao[6] in lista:
+                #     pontos.append([valor_mao[6], 0])
+                #     pontos.append([valor_mao[5], 0])
+                # else:
+                #     pontos.append([0, 0])
+                #     igual(pontos, valor_mao)
     
     pp = flush(mesa, valor_mao, 7)
     if pp:
         if pontos[0] == 5 and pp[0] == 6:    
             pontos = [9]
             igual(pontos, valor_mao)
-            pontos.append([0, 0])
         else:
             pontos = pp 
     return pontos

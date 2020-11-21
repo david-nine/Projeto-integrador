@@ -1,9 +1,6 @@
 import random
 from cacualr_mao import calcular_mao
-'''
-import time
-time.clock() conta os segundos
-'''
+
 baralho = ["1p","1c","1e","1o","2p","2c","2e","2o","3p","3c","3e","3o","4p","4c","4e","4o","5p",
            "5c","5e","5o","6p","6c","6e","6o","7p","7c","7e","7o","8p","8c","8e","8o","9p","9c",
            "9e","9o","10p","10c","10e","10o","Jp","Jc","Je","Jo","Qp","Qc","Qe","Qo","Kp","Kc","Ke","Ko"]

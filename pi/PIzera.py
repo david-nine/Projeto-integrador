@@ -58,7 +58,7 @@ class Jogador(object):
         print("Aposta da rodada",start.aposta_rodada)
         print("|===================================|")
         print("O que deseja fazer?")
-        dicionario = {"1": "1. apostar", "2": "2. passar", "3": "3. a win", "4": "4. cobrir", "5": "5. aumentar", "6": "6.correr"}
+        dicionario = {"1": "1. apostar", "2": "2. passar", "3": "3. a win", "4": "4. cobrir", "5": "5. aumentar", "6": "6 .correr"}
         if mostrar == "Rodada de apostas inicial": 
             if self.nome == start.rodada[0].nome:
                 opcoes = ["1", "3", "6"]
@@ -98,103 +98,7 @@ class Jogador(object):
                 break
             except ValueError as error:
                 print(error)
-        # if mostrar == "Rodada de apostas inicial":
-        #     if self.nome != start.rodada[0].nome:
-        #         print("1. Apostar")
-        #         print("2. Cobrir")
-        #         print("3. Correr")
-        #         while True:
-        #             jogada = input()
-        #             try:
-        #                 if jogada == '1':   
-        #                     self.apostar()
-        #                     start.aposta_rodada = quantidade * 2
-        #                 elif jogada == '2':
-        #                     self.apostar(aposta=start.aposta_rodada, cobrir=True)
-        #                 elif jogada == '3':    
-        #                     self.correr()
-        #                 else:
-        #                     raise ValueError("Jogada inválida")
-        #                 break
-        #             except ValueError as error:
-        #                 print(error)
-        #     else:
-        #         print("1. Apostar")
-        #         print("2. Correr")
-        #         print("3. A win")
-        #         while True:
-        #             jogada = input()
-        #             try:
-        #                 if jogada == '1':
-        #                     self.apostar()
-        #                     start.aposta_rodada *= 2
-        #                 elif jogada == '2':
-        #                     self.correr()
-        #                 elif jogada == '3':
-        #                     self.apostar(aposta=self.dinheiro, win=True)
-        #                     self.win = True
-        #                 else:
-        #                     raise ValueError("Jogada inválida")
-        #                 break
-        #             except ValueError as error:
-        #                 print(error)
-
-        # elif start.aposta_rodada == 0:
-        #     print("1. Apostar")
-        #     print("2. Passar")
-        #     print("3. A win")
-        #     print("4. Correr")
-        #     while True:
-        #         jogada = input() 
-        #         try:
-        #             if jogada == '1':
-        #                 self.apostar()
-        #             elif jogada == '2':
-        #                 return True
-        #             elif jogada == '3': 
-        #                 self.apostar(aposta=self.dinheiro, win=True)
-        #                 self.win = True
-        #             elif jogada == '4':
-        #                 self.correr()
-        #             else:
-        #                 raise ValueError("Jogada inválida")
-        #             break
-        #         except ValueError as error:
-        #             print(error)
-        # else:
-        #     if self.dinheiro <= start.aposta_rodada:
-        #         print("1. A win")
-        #         print("2. Correr")
-        #         while True:
-        #             jogada = input()
-        #             if jogada == '1': 
-        #                 self.apostar(aposta=self.dinheiro, win=True)
-        #                 self.win = True
-        #             elif jogada == '2':
-        #                 self.correr()
-        #     else:
-        #             print("1. Aumentar")
-        #             print("2. Cobrir")
-        #             print("3. A win")
-        #             print("4. Correr")
-        #             while True:
-        #                 jogada = input()
-        #                 try:
-        #                     if jogada == '1':
-        #                         self.apostar(aposta=start.aposta_rodada)
-        #                     elif jogada == '2':
-        #                         self.apostar(aposta=start.aposta_rodada, cobrir=True)
-        #                     elif jogada == '3': 
-        #                         self.apostar(aposta=self.dinheiro, win=True)
-        #                         self.win = True
-        #                     elif jogada == '4':
-        #                         self.correr()
-        #                     else:
-        #                         raise ValueError("Jogada inválida")
-        #                     break
-        #                 except ValueError as error:
-        #                     print(error)
-
+    
     def correr(self):
         start.baralho
         for i in range(2):
@@ -250,13 +154,23 @@ class Jogo(object):
             jogador.valor_mao = calcular_mao(jogador.cartas, self.mesa)
             del self.mesa[6]
             del self.mesa[5]
-        # for i in range(2):
-        #     for jogardor in self.rodada:
-                
+        lista_vencedores = self.rodada
+        for i in range(len(self.rodada)):
+            for cont in range(len(self.rodada)):
+                x = lista_vencedores[i].valor_mao[0]
+                y = lista_vencedores[cont].valor_mao[0] 
+                if x >= y:  
+                    val = lista_vencedores[i]
+                    lista_vencedores[i] = lista_vencedores[cont]
+                    lista_vencedores[cont] = val
+        # x = lista_vencedores[0].
+        # for jogador in lista_vencedores:    
+        #     print(jogador.valor_mao) 
+
 
     def rodadas(self):
         i = 0
-        self.rodada = self.jogadores
+        self.rodada = self.jogadores =
         mostrar = [self.mesa[0], self.mesa[1], self.mesa[2]]
         while i < 4 and len(self.rodada) > 1: 
             for jogador in self.rodada:
@@ -284,10 +198,6 @@ class Jogo(object):
             self.aposta_rodada = 0
             i += 1
         return self.calcular_vencedor()
-            
-            # if len(self.rodada) == 1:
-            #     receber(self.rodada[0])
-            #     break
 
 if __name__ == "__main__":
     start = Jogo(baralho) 

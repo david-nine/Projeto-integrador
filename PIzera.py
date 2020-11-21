@@ -14,13 +14,8 @@ class Jogador(object):
         self.cartas = cartas 
         self.dinheiro = dinheiro
         self.valor_mao = []
-        self.aposta = None
+        self.aposta = 0
         self.win = False
-
-    def getJogador(self, nome):
-        for jogador in start.jogadores:
-            if jogador.nome == nome:
-                return jogador 
     
     def apostar(self, aposta = 0, win = False, cobrir = False):
         if win == False and cobrir == False:
@@ -44,9 +39,14 @@ class Jogador(object):
             self.aposta = aposta
             start.aposta_rodada = aposta
         elif cobrir == True:
-            self.dinheiro -= start.aposta_rodada
-            start.dinheiro_mesa += start.aposta_rodada
-            self.aposta = start.aposta_rodada
+            if self.aposta == 0:
+                self.dinheiro -= start.aposta_rodada
+                start.dinheiro_mesa += start.aposta_rodada
+                self.aposta = start.aposta_rodada
+            else:
+                self.dinheiro = self.dinheiro - (start.aposta_rodada - self.aposta)
+                start.dinheiro_mesa += start.aposta_rodada
+                self.aposta = start.aposta_rodada
 
 
     def jogar(self, mostrar):
@@ -58,19 +58,26 @@ class Jogador(object):
         print("Aposta da rodada",start.aposta_rodada)
         print("|===================================|")
         print("O que deseja fazer?")
-        dicionario = {"1": "1. apostar", "2": "2. passar", "3": "3. a win", "4": "4. cobrir", "5": "5. aumentar", "6": "6 .correr"}
+        dicionario = {"1": "1. apostar", "2": "2. passar", "3": "3. a win", "4": "4. cobrir", "5": "5. aumentar", "6": "6. correr"}
         if mostrar == "Rodada de apostas inicial": 
             if self.nome == start.rodada[0].nome:
                 opcoes = ["1", "3", "6"]
-            else:  
-                opcoes = ["3", "4", "5", "6"]
+            elif self.dinheiro > start.aposta_rodada:
+                    opcoes = ["3", "4", "5", "6"]
+            elif self.dinheiro == start.aposta_rodada:
+                opcoes = ["3", "5", "6"]
+            else:
+                opcoes = ["3", "6"]
         else:
             if start.aposta_rodada == 0:
                 opcoes = ["1", "2", "3", "6"]
             else:
-                if self.dinheiro >= start.aposta_rodada:
+                if self.dinheiro > start.aposta_rodada:
                     opcoes = ["3", "4", "5", "6"]
+                elif self.dinheiro == start.aposta_rodada:
+                    opcoes = ["3", "5", "6"]
                 else:
+                    print("aqui")
                     opcoes = ["3", "6"]
         for opcao in opcoes:
             print(dicionario[opcao])
@@ -100,13 +107,14 @@ class Jogador(object):
                 print(error)
     
     def correr(self):
-        start.baralho
         for i in range(2):
             start.baralho.append(self.cartas[i])
-        jogador = self.getJogador(self.nome)
-        start.rodada.remove(jogador)
+        for jogador in start.rodada:
+            if jogador.nome == self.nome:
+                start.rodada.remove(jogador)
         self.cartas = []
-
+        self.aposta = 0
+            
     def receber(self, quantidade):
         self.dinheiro += quantidade
 
@@ -118,6 +126,7 @@ class Jogo(object):
         self.dinheiro_mesa = 0
         self.rodada = []
         self.aposta_rodada = 0
+        self.vencedor = None
     
     def dar_cartas(self):
         for i in range(len(self.jogadores)):
@@ -133,7 +142,6 @@ class Jogo(object):
             self.mesa.append(c)
 
     def add_jogadores(self):
-        jogadores = []
         while True:
             try:
                 num = int(input("Quantidade de jogadores?: "))
@@ -142,11 +150,30 @@ class Jogo(object):
                 break
             except ValueError as error:
                 print(error)    
+        j = []
         for i in range(num):
-            nome = input("Nome do jogador: ")
-            player = Jogador(nome)
-            jogadores.append(player)
-        return jogadores
+            if len(j) >= 1:
+                while True:
+                    nome = input("Nome do jogador: ") 
+                    try:
+                        x = 0
+                        for jogador in j:
+                            if jogador.nome == nome:
+                                x = 1
+                        if x == 0:
+                            print("aqui")
+                            player = Jogador(nome)
+                            j.append(player)
+                        else:    
+                            raise ValueError("Este nome já existe!! Tente outro.")
+                        break
+                    except ValueError as error:
+                        print(error)  
+            else:  
+                nome = input("Nome do jogador: ") 
+                player = Jogador(nome)
+                j.append(player)
+        return j
 
 
     def calcular_vencedor(self):
@@ -163,17 +190,61 @@ class Jogo(object):
                     val = lista_vencedores[i]
                     lista_vencedores[i] = lista_vencedores[cont]
                     lista_vencedores[cont] = val
-        for jogador in lista_vencedores:    
-            print(jogador.valor_mao) 
+        x = lista_vencedores[0].valor_mao[0]
+        maos_iguais = 1
+        for i in range(1, len(lista_vencedores)):
+            if lista_vencedores[i].valor_mao[0] == x:
+                maos_iguais += 1
+        if maos_iguais > 1:
+            for n in range(2):
+                for i in range(maos_iguais):
+                    for cont in range(maos_iguais):
+                        x = lista_vencedores[i].valor_mao[1][n]
+                        y = lista_vencedores[cont].valor_mao[1][n] 
+                        if x >= y:  
+                            val = lista_vencedores[i]
+                            lista_vencedores[i] = lista_vencedores[cont]
+                            lista_vencedores[cont] = val
+        x = lista_vencedores[0].valor_mao[1][0]
+        cartas_iguais = 1
+        for i in range(1, maos_iguais):
+            if lista_vencedores[i].valor_mao[1][0] == x:
+                cartas_iguais += 1
+        if cartas_iguais > 1:
+            for i in range(maos_iguais):
+                for cont in range(maos_iguais):
+                    x = lista_vencedores[i].valor_mao[1][1]
+                    y = lista_vencedores[cont].valor_mao[1][1] 
+                    if x >= y:  
+                        val = lista_vencedores[i]
+                        lista_vencedores[i] = lista_vencedores[cont]
+                        lista_vencedores[cont] = val    
+            
+        if lista_vencedores[0].valor_mao == lista_vencedores[1].valor_mao:
+            if lista_vencedores[1].valor_mao == lista_vencedores[2].valor_mao:
+                if lista_vencedore[2].valor_mao == lista_vencedores[3].valor_mao:
+                    for i in range(4):
+                        lista_vencedores[i].receber(quantidade)
+                else:
+                    for i in range(3):
+                        lista_vencedores[i].receber(quantidade)
+            else:
+                quantidade = self.dinheiro_mesa//2
+                for i in range(2):
+                    lista_vencedores[i].receber(quantidade)
+        else:
+            lista_vencedores[0].receber(self.dinheiro_mesa)
+        self.vencedor = lista_vencedores[0]
+        for jogador in lista_vencedores:
+            jogador.correr()
 
 
     def rodadas(self):
         i = 0
-        self.rodada = self.jogadores
+        self.rodada = self.jogadores.copy()
         mostrar = [self.mesa[0], self.mesa[1], self.mesa[2]]
         while i < 4 and len(self.rodada) > 1: 
             for jogador in self.rodada:
-                print(self.rodada)
                 if i != 0:
                     jogador.jogar(mostrar)
                 else:
@@ -196,17 +267,35 @@ class Jogo(object):
                 mostrar.append(self.mesa[i+2])
             self.aposta_rodada = 0
             i += 1
-        return self.calcular_vencedor()
+        self.calcular_vencedor()
+
+    def reiniciar(self):
+        self.dinheiro_mesa = 0
+        val = self.jogadores[0]
+        self.jogadores.remove(val)
+        self.jogadores.append(val)
+        for jogador in self.jogadores:
+            if jogador.dinheiro == 0:
+                print("Jogador", jogador.nome,", seu dinheiro acabou! Você foi removido da mesa")
+                self.jogadores.remove(jogador)
+        for i in range(5):
+            self.baralho.append(self.mesa[i])
+        self.mesa = []
+        if len(self.jogadores) < 2:
+            print("O jogo acabou!!", self.jogadores[0].nome," você venceu")
+            print("Voce ganhou", self.jogadores[0].dinheiro," em fichas")
+            return False
+
 
 if __name__ == "__main__":
     start = Jogo(baralho) 
-    start.dar_cartas()   
-    start.calcular_vencedor()
-    start.rodadas()      
-    for j in start.jogadores:    
-        a = start.jogadores[0]
-        print(j.nome)
-        print(j.cartas)
-        print(j.valor_mao)
-        print(j.dinheiro)
-    print(start.mesa)
+    while True: 
+        start.dar_cartas()   
+        start.rodadas()      
+        print("Vencedor:", start.vencedor.nome)
+        r = start.reiniciar()
+        if r == False:
+            break
+        op = input("Desejam continuar ( s / n ): ")
+        if op != "s":
+            break

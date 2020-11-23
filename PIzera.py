@@ -111,6 +111,8 @@ class Jogador(object):
                 start.rodada.remove(jogador)
         self.cartas = []
         self.aposta = 0
+        self.valor_mao = []
+        self.win = False
             
     def receber(self, quantidade):
         self.dinheiro += quantidade
@@ -158,7 +160,6 @@ class Jogo(object):
                             if jogador.nome == nome:
                                 x = 1
                         if x == 0:
-                            print("aqui")
                             player = Jogador(nome)
                             j.append(player)
                         else:    
@@ -219,7 +220,7 @@ class Jogo(object):
             
         if lista_vencedores[0].valor_mao == lista_vencedores[1].valor_mao:
             if lista_vencedores[1].valor_mao == lista_vencedores[2].valor_mao:
-                if lista_vencedore[2].valor_mao == lista_vencedores[3].valor_mao:
+                if lista_vencedores[2].valor_mao == lista_vencedores[3].valor_mao:
                     for i in range(4):
                         lista_vencedores[i].receber(quantidade)
                 else:
@@ -246,8 +247,14 @@ class Jogo(object):
                     jogador.jogar(mostrar)
                 else:
                     jogador.jogar("Rodada de apostas inicial")
+                if jogador.win == True:
+                    for j in self.rodada:
+                        if j != jogador:
+                            j.jogar(mostrar)
+                    return self.calcular_vencedor()
             if len(self.rodada) == 1:
-                return self.calcular_vencedor()            
+                self.vencedor = self.rodada[0]
+                return self.vencedor.correr()
             for jogador in self.rodada:
                 if self.aposta_rodada != jogador.aposta:
                     if i > 0:
@@ -255,9 +262,6 @@ class Jogo(object):
                     else:
                         if jogador != self.rodada[0]:
                             jogador.jogar(mostrar)
-            for jogador in self.rodada:
-                if jogador.win == True:
-                    return self.calcular_vencedor()
             for jogador in self.rodada:
                 jogador.aposta = 0
             if i != 0 and i < 3:
@@ -290,6 +294,7 @@ if __name__ == "__main__":
         start.dar_cartas()   
         start.rodadas()      
         print("Vencedor:", start.vencedor.nome)
+        print("Dinheiro:", start.vencedor.dinheiro)
         r = start.reiniciar()
         if r == False:
             break

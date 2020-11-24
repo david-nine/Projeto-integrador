@@ -296,7 +296,7 @@ class Jogo(object):
             return False
         for jogador in self.rodada:
             jogador.correr()
-
+        self.aposta_rodada = 0
 
 if __name__ == "__main__":
     start = Jogo(baralho) 

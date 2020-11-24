@@ -14,17 +14,24 @@ class Jogador(object):
         self.aposta = 0
         self.win = False
     
-    def apostar(self, aposta = 0, win = False, cobrir = False):
+    def apostar(self, aposta = 0, win = False, cobrir = False, aumentar=False):
         if win == False and cobrir == False:
             while True:
                 quantidade = int(input("valor: "))
                 try:
                     quantidade = quantidade + aposta
-                    if self.dinheiro >= quantidade:
+                    if self.dinheiro >= quantidade and aumentar == False:
                         self.dinheiro -= quantidade
                         start.dinheiro_mesa += quantidade
                         self.aposta = quantidade
                         start.aposta_rodada = quantidade
+                    elif self.dinheiro >= quantidade and aumentar == True:                        
+                        start.aposta_rodada = quantidade
+                        quantidade = start.aposta_rodada
+                        self.dinheiro -= quantidade
+                        start.dinheiro_mesa += quantidade
+                        self.aposta = quantidade 
+                        print("aqui")
                     else:
                         raise ValueError("Não tem dinheiro brow")
                     break
@@ -42,27 +49,28 @@ class Jogador(object):
                 self.aposta = start.aposta_rodada
             else:
                 self.dinheiro = self.dinheiro - (start.aposta_rodada - self.aposta)
-                start.dinheiro_mesa += start.aposta_rodada
+                start.dinheiro_mesa += (start.aposta_rodada - self.aposta)
                 self.aposta = start.aposta_rodada
-
+            
 
     def jogar(self, mostrar):
         print("|===================================|")
-        print("Vez de", self.nome)
-        print("Dinheiro: ", self.dinheiro)
-        print("Mesa:    ", mostrar)
-        print("Sua mão: ", self.cartas)
-        print("Aposta da rodada",start.aposta_rodada)
+        print("Vez de          :", self.nome)
+        print("Dinheiro        :", self.dinheiro)
+        print("Mesa            :", mostrar)
+        print("Sua mão         :", self.cartas)
+        print("Aposta da rodada:", start.aposta_rodada)
         print("|===================================|")
         print("O que deseja fazer?")
-        dicionario = {"1": "1. apostar", "2": "2. passar", "3": "3. a win", "4": "4. cobrir", "5": "5. aumentar", "6": "6. correr"}
+        dicionario = {"1": "1. Apostar", "2": "2. Passar", "3": "3. All in", "4": "4. Cobrir", "5": "5. Aumentar", "6": "6. Correr"}
         if mostrar == "Rodada de apostas inicial": 
-            if self.nome == start.rodada[0].nome:
+            if self.nome == start.rodada[0].nome: 
                 opcoes = ["1", "3", "6"]
-            elif self.dinheiro > start.aposta_rodada:
+            elif self.dinheiro >= start.aposta_rodada:
+                if len(start.jogadores) == 2:
+                    opcoes = ["3", "4", "6"]
+                else:    
                     opcoes = ["3", "4", "5", "6"]
-            elif self.dinheiro == start.aposta_rodada:
-                opcoes = ["3", "5", "6"]
             else:
                 opcoes = ["3", "6"]
         else:
@@ -71,10 +79,7 @@ class Jogador(object):
             else:
                 if self.dinheiro > start.aposta_rodada:
                     opcoes = ["3", "4", "5", "6"]
-                elif self.dinheiro == start.aposta_rodada:
-                    opcoes = ["3", "5", "6"]
                 else:
-                    print("aqui")
                     opcoes = ["3", "6"]
         for opcao in opcoes:
             print(dicionario[opcao])
@@ -84,7 +89,7 @@ class Jogador(object):
             try:
                 if "1" in opcoes and jogada == "1":
                     self.apostar()
-                    if mostrar == "Rodada de apostas inicial" and self.nome == start.rodada[0].nome:
+                    if mostrar == "Rodada de apostas inicial" and self.nome == start.rodada[0].nome and len(start.jogadores) > 2:
                         start.aposta_rodada *= 2
                 elif "2" in opcoes and jogada == "2":
                     return True
@@ -94,7 +99,7 @@ class Jogador(object):
                 elif "4" in opcoes and jogada == "4":
                     self.apostar(aposta=start.aposta_rodada, cobrir=True)
                 elif "5" in opcoes and jogada == "5":
-                    self.apostar(start.aposta_rodada)
+                    self.apostar(start.aposta_rodada, aumentar=True)
                 elif "6" in opcoes and jogada == "6":
                     self.correr()
                 else:
@@ -232,9 +237,7 @@ class Jogo(object):
                     lista_vencedores[i].receber(quantidade)
         else:
             lista_vencedores[0].receber(self.dinheiro_mesa)
-        self.vencedor = lista_vencedores[0]
-        for jogador in lista_vencedores:
-            jogador.correr()
+        start.vencedor = lista_vencedores[0]
 
 
     def rodadas(self):
@@ -251,10 +254,15 @@ class Jogo(object):
                     for j in self.rodada:
                         if j != jogador:
                             j.jogar(mostrar)
+                    if len(self.rodada) == 1:
+                        self.vencedor = self.rodada[0]
+                        self.vencedor.receber(self.dinheiro_mesa)
+                        return self.vencedor
                     return self.calcular_vencedor()
             if len(self.rodada) == 1:
                 self.vencedor = self.rodada[0]
-                return self.vencedor.correr()
+                self.vencedor.receber(self.dinheiro_mesa)
+                return self.vencedor
             for jogador in self.rodada:
                 if self.aposta_rodada != jogador.aposta:
                     if i > 0:
@@ -286,6 +294,8 @@ class Jogo(object):
             print("O jogo acabou!!", self.jogadores[0].nome," você venceu")
             print("Voce ganhou", self.jogadores[0].dinheiro," em fichas")
             return False
+        for jogador in self.rodada:
+            jogador.correr()
 
 
 if __name__ == "__main__":
@@ -295,6 +305,8 @@ if __name__ == "__main__":
         start.rodadas()      
         print("Vencedor:", start.vencedor.nome)
         print("Dinheiro:", start.vencedor.dinheiro)
+        print("Mão     :", start.vencedor.cartas)
+        print("Mesa    :", start.mesa)
         r = start.reiniciar()
         if r == False:
             break

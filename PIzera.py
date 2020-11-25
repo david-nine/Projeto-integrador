@@ -270,6 +270,10 @@ class Jogo(object):
                     else:
                         if jogador != self.rodada[0]:
                             jogador.jogar(mostrar)
+            if len(self.rodada) == 1:
+                self.vencedor = self.rodada[0]
+                self.vencedor.receber(self.dinheiro_mesa)
+                return self.vencedor
             for jogador in self.rodada:
                 jogador.aposta = 0
             if i != 0 and i < 3:

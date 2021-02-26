@@ -17,7 +17,7 @@ Serão mostradas opções de acordo com a rodada e a ordem de jogar do jogadores
 - Cobrir;
 - Passar.
 
-Um exemplo:
+Um exemplo das opções de jogadas:
 ![image](https://user-images.githubusercontent.com/54282964/109364792-5738ad80-786e-11eb-8fb0-d3ba04f80711.png)
 
 ## Observações

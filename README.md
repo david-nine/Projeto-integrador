@@ -5,7 +5,7 @@ São 4 rodadas, em cada rodada cada jogador joga uma vez, podendo apostar, passa
 
 ## Instalação
 
-O jogo foi feito utilizando python 3, para rodar basta baixar o mesmo e executar o arquivo principal
+O jogo foi feito utilizando python 3, para rodar basta baixar o mesmo e executar o arquivo inicializador.py
 
 ## Como usar
 

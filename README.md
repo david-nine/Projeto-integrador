@@ -17,6 +17,9 @@ Serão mostradas opções de acordo com a rodada e a ordem de jogar do jogadores
 - Cobrir;
 - Passar.
 
+Um exemplo:
+![image](https://user-images.githubusercontent.com/54282964/109364792-5738ad80-786e-11eb-8fb0-d3ba04f80711.png)
+
 ## Observações
 
 Como o jogo é um protótipo ele só roda no terminal e em apenas um computador, não tem persistência de dados e não tem uma interface gráfica.
